@@ -1,0 +1,11 @@
+en:
+  permission_manage_documentation: Gérer la documentation
+  permission_rename_documentation_pages: Renommer les pages
+  permission_delete_documentation_pages: Supprimer les pages
+  permission_view_documentation_pages: Voir le documentation
+  permission_view_documentation_edits: "Voir l'historique des modifications"
+  permission_edit_documentation_pages: Modifier les pages
+  permission_delete_documentation_pages_attachments: Supprimer les fichiers joints
+  permission_protect_documentation_pages: Protéger les pages
+  permission_export_documentation_pages: Exporter les pages
+  project_module_documentation: Documentation

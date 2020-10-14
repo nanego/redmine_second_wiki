@@ -1,5 +1,9 @@
 class Documentation < Wiki
 
+  def visible?(user=User.current)
+    !user.nil? && user.allowed_to?(:view_documentation_pages, project)
+  end
+
   # find the page with the given title
   # if page doesn't exist, return a new page
   def find_or_new_page(title)

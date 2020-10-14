@@ -1,3 +1,11 @@
-# English strings go here for Rails i18n
 en:
-  # my_label: "My label"
+  permission_manage_documentation: Manage documentation
+  permission_rename_documentation_pages: Rename documentation pages
+  permission_delete_documentation_pages: Delete documentation pages
+  permission_view_documentation_pages: View documentation
+  permission_view_documentation_edits: View documentation history
+  permission_edit_documentation_pages: Edit documentation pages
+  permission_delete_documentation_pages_attachments: Delete attachments
+  permission_protect_documentation_pages: Protect documentation pages
+  permission_export_documentation_pages: Export documentation pages
+  project_module_documentation: Documentation
