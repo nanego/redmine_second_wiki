@@ -2,6 +2,50 @@ require_dependency 'wiki_controller'
 
 class DocumentationController < WikiController
 
+  # display a page (in editing mode if it doesn't exist)
+  def show
+    if params[:version] && !User.current.allowed_to?(:view_documentation_edits, @project)
+      deny_access
+      return
+    end
+    @content = @page.content_for_version(params[:version])
+    if @content.nil?
+      if User.current.allowed_to?(:edit_documentation_pages, @project) && editable? && !api_request?
+        edit
+        render :action => 'edit'
+      else
+        puts "PAGE DO NOT EXISTS YET"
+        render_404
+      end
+      return
+    end
+
+    call_hook :controller_documentation_show_before_render, content: @content, format: params[:format]
+
+    if User.current.allowed_to?(:export_documentation_pages, @project)
+      if params[:format] == 'pdf'
+        send_file_headers! :type => 'application/pdf', :filename => filename_for_content_disposition("#{@page.title}.pdf")
+        return
+      elsif params[:format] == 'html'
+        export = render_to_string :action => 'export', :layout => false
+        send_data(export, :type => 'text/html', :filename => filename_for_content_disposition("#{@page.title}.html"))
+        return
+      elsif params[:format] == 'txt'
+        send_data(@content.text, :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
+        return
+      end
+    end
+    @editable = editable?
+    @sections_editable = @editable && User.current.allowed_to?(:edit_documentation_pages, @page.project) &&
+      @content.current_version? &&
+      Redmine::WikiFormatting.supports_section_edit?
+
+    respond_to do |format|
+      format.html
+      format.api
+    end
+  end
+
   def rename
     return render_403 unless editable?
     @page.redirect_existing_links = true
@@ -10,13 +54,17 @@ class DocumentationController < WikiController
     @page.safe_attributes = params[:wiki_page]
     if request.post? && @page.save
       flash[:notice] = l(:notice_successful_update)
+      #############
+      # START PATCH
       redirect_to project_documentation_page_path(@page.project, @page.title)
+      # END PATCH
+      #############
     end
   end
 
   def new
     @page = WikiPage.new(:wiki => @wiki, :title => params[:title])
-    unless User.current.allowed_to?(:edit_wiki_pages, @project)
+    unless User.current.allowed_to?(:edit_documentation_pages, @project)
       render_403
       return
     end
@@ -82,7 +130,7 @@ class DocumentationController < WikiController
         }
         format.api {
           if was_new_page
-            render :action => 'show', :status => :created, :location => project_wiki_page_path(@project, @page.title)
+            render :action => 'show', :status => :created, :location => project_documentation_page_path(@project, @page.title)
           else
             render_api_ok
           end

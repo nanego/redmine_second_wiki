@@ -1,0 +1,1 @@
+<% end if controller.controller_name == 'documentation' ? User.current.allowed_to?(:export_documentation_pages, @project) : User.current.allowed_to?(:export_wiki_pages, @project) %>
