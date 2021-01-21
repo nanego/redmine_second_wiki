@@ -14,7 +14,6 @@ class DocumentationController < WikiController
         edit
         render :action => 'edit'
       else
-        puts "PAGE DO NOT EXISTS YET"
         render_404
       end
       return

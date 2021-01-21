@@ -24,3 +24,12 @@ Deface::Override.new :virtual_path => "wiki/show",
                      :name => "adapt-export-wiki-permissions",
                      :replace => "erb[silent]:contains('User.current.allowed_to?(:export_wiki_pages, @project)')",
                      :partial => "documentation/export_links"
+
+Deface::Override.new :virtual_path => "wiki/show",
+                     :name => "adapt-link-to-diff",
+                     :replace => "erb[loud]:contains('link_to l(:label_diff)')",
+                     :text => <<EOS
+<%= link_to l(:label_diff), :action => 'diff',
+  :id => @page.title, :project_id => @page.project,
+  :version => @content.version %>
+EOS
