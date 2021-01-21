@@ -2,6 +2,18 @@ require_dependency 'wiki_controller'
 
 class DocumentationController < WikiController
 
+  def rename
+    return render_403 unless editable?
+    @page.redirect_existing_links = true
+    # used to display the *original* title if some AR validation errors occur
+    @original_title = @page.pretty_title
+    @page.safe_attributes = params[:wiki_page]
+    if request.post? && @page.save
+      flash[:notice] = l(:notice_successful_update)
+      redirect_to project_documentation_page_path(@page.project, @page.title)
+    end
+  end
+
   def new
     @page = WikiPage.new(:wiki => @wiki, :title => params[:title])
     unless User.current.allowed_to?(:edit_wiki_pages, @project)

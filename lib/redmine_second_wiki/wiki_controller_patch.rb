@@ -6,8 +6,8 @@ class WikiController
 
   def redirect_to_show_documentation
 
-    puts "redirect_to_show_documentation"
-    puts @wiki.pages.inspect
+    # puts "redirect_to_show_documentation"
+    # puts @wiki.pages.inspect
 
   end
 

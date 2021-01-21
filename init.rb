@@ -10,7 +10,7 @@ Redmine::Plugin.register :redmine_second_wiki do
   name 'Redmine Second-Wiki, aka Documentation plugin'
   author 'Vincent ROBERT'
   description 'This is a plugin for Redmine which adds a Documentation module and provides a second wiki to projects'
-  version '0.0.1'
+  version '1.0.0'
   url 'https://github.com/nanego/redmine_second_wiki'
   author_url 'https://github.com/nanego'
 
@@ -25,6 +25,18 @@ Redmine::Plugin.register :redmine_second_wiki do
     permission :protect_documentation_pages, {:documentation => :protect}, :require => :member
     permission :manage_documentation, {:documentations => [:edit, :destroy], :documentation => :rename}, :require => :member
   end
+
+=begin
+  - :view_wiki_pages
+  - :export_wiki_pages
+  - :view_wiki_edits
+  - :edit_wiki_pages
+  - :delete_wiki_pages_attachments
+  - :protect_wiki_pages
+  - :delete_wiki_pages
+  - :rename_wiki_pages
+  - :manage_wiki
+=end
 
 end
 

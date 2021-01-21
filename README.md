@@ -1,6 +1,8 @@
 ## Redmine Second-Wiki, aka Documentation plugin
 
-This plugin adds a second wiki module to projects. The new tab is named Documentation, and has its own permissions, allowing you to split the wiki and provide different level of documentation to different groups of users.
+This plugin adds a second wiki module to projects.
+The new module is called Documentation.
+It has its own permissions, allowing you to split the wiki and provide different levels of documentation to different groups of users.
 
 
 ## Test status
