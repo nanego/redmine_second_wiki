@@ -57,6 +57,18 @@ describe DocumentationController, type: :controller do
      :manage_documentation].each do |permission|
       manager_role.add_permission!(permission)
     end
+
+    [:view_wiki_pages,
+     :view_wiki_edits,
+     :export_wiki_pages,
+     :edit_wiki_pages,
+     :rename_wiki_pages,
+     :delete_wiki_pages,
+     :delete_wiki_pages_attachments,
+     :protect_wiki_pages,
+     :manage_wiki].each do |permission|
+      manager_role.remove_permission!(permission)
+    end
   end
 
   it "shows document start page" do
@@ -103,6 +115,25 @@ describe DocumentationController, type: :controller do
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation/1', :text => /Previous/
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation/2/diff', :text => /diff/
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation/3', :text => /Next/
+  end
+
+  it "denies to show old version without permission" do
+    manager_role.remove_permission! :view_documentation_edits
+    get :show, :params => {:project_id => 'ecookbook', :id => 'Documentation', :version => '2'}
+    expect(response).to have_http_status(:forbidden) # 403
+  end
+
+  it "shows redirected page" do
+    WikiRedirect.create!(:wiki_id => 1, :title => 'Old_doc_title', :redirects_to => 'Another_Documentation_Page')
+    expect(
+      get :show, :params => {:project_id => 'ecookbook', :id => 'Old_doc_title'}
+    ).to redirect_to('/projects/ecookbook/documentation/Another_Documentation_Page')
+  end
+
+  it "denies to export without permission" do
+    manager_role.remove_permission! :export_documentation_pages
+    get :export, :params => {:project_id => 'ecookbook'}
+    expect(response).to have_http_status(:forbidden) # 403
   end
 
 end

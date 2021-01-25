@@ -1,4 +1,4 @@
-en:
+fr:
   permission_manage_documentation: Gérer la documentation
   permission_rename_documentation_pages: Renommer les pages
   permission_delete_documentation_pages: Supprimer les pages
@@ -9,3 +9,9 @@ en:
   permission_protect_documentation_pages: Protéger les pages
   permission_export_documentation_pages: Exporter les pages
   project_module_documentation: Documentation
+  label_documentation: Documentation
+  label_documentation_edit: Révision documentation
+  label_documentation_edit_plural: Révisions documentation
+  label_documentation_page: Page documentation
+  label_documentation_page_plural: Pages documentation
+  label_documentation_page_new: Nouvelle page documentation

@@ -1,0 +1,11 @@
+<% if controller.controller_name == 'documentation'
+     path = project_documentation_page_path(@page.project, @page.title, :version => nil)
+     history_path = history_project_documentation_page_path(@page.project, @page.title)
+   else
+     path = project_wiki_page_path(@page.project, @page.title, :version => nil)
+     history_path = history_project_wiki_page_path(@page.project, @page.title)
+   end
+%>
+<%= title [@page.pretty_title, path],
+          [l(:label_history), history_path],
+          "#{l(:label_revision)} #{@diff.content_to.version}" %>

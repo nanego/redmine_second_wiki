@@ -9,3 +9,9 @@ en:
   permission_protect_documentation_pages: Protect documentation pages
   permission_export_documentation_pages: Export documentation pages
   project_module_documentation: Documentation
+  label_documentation: Documentation
+  label_documentation_edit: Documentation edit
+  label_documentation_edit_plural: Documentation edits
+  label_documentation_page: Documentation page
+  label_documentation_page_plural: Documentation pages
+  label_documentation_page_new: New documentation page

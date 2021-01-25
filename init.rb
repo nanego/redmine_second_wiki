@@ -3,6 +3,7 @@ Rails.application.config.to_prepare do
   require_dependency 'redmine_second_wiki/wiki_helper_patch'
   require_dependency 'redmine_second_wiki/application_helper_patch'
   require_dependency 'redmine_second_wiki/project_patch'
+  require_dependency 'redmine_second_wiki/wiki_page_patch'
 end
 
 Redmine::Plugin.register :redmine_second_wiki do
