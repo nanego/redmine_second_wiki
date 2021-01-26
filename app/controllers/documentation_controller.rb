@@ -153,6 +153,11 @@ class DocumentationController < WikiController
     end
   end
 
+  def protect
+    @page.update_attribute :protected, params[:protected]
+    redirect_to project_documentation_page_path(@project, @page.title)
+  end
+
   private
 
   # Finds the requested page or a new page if it doesn't exist

@@ -15,7 +15,7 @@ describe DocumentationController, type: :controller do
   let!(:documentation) { Documentation.find_by(project: Project.find(1)) }
   let!(:project) { Project.find_by_identifier("ecookbook") }
 
-  let!(:documentation_page_1) { WikiPage.create(title: "Documentation", wiki_id: documentation.id) }
+  let!(:documentation_page_1) { WikiPage.create(title: "Documentation", wiki_id: documentation.id, protected: true) }
   let!(:documentation_content_1) { WikiContent.create(page_id: documentation_page_1.id,
                                                       text: "h1. First documentation page",
                                                       author_id: 1, version: 3) }
@@ -119,21 +119,49 @@ describe DocumentationController, type: :controller do
 
   it "denies to show old version without permission" do
     manager_role.remove_permission! :view_documentation_edits
-    get :show, :params => {:project_id => 'ecookbook', :id => 'Documentation', :version => '2'}
+    get :show, :params => { :project_id => 'ecookbook', :id => 'Documentation', :version => '2' }
     expect(response).to have_http_status(:forbidden) # 403
   end
 
   it "shows redirected page" do
     WikiRedirect.create!(:wiki_id => 1, :title => 'Old_doc_title', :redirects_to => 'Another_Documentation_Page')
     expect(
-      get :show, :params => {:project_id => 'ecookbook', :id => 'Old_doc_title'}
+      get :show, :params => { :project_id => 'ecookbook', :id => 'Old_doc_title' }
     ).to redirect_to('/projects/ecookbook/documentation/Another_Documentation_Page')
   end
 
   it "denies to export without permission" do
     manager_role.remove_permission! :export_documentation_pages
-    get :export, :params => {:project_id => 'ecookbook'}
+    get :export, :params => { :project_id => 'ecookbook' }
     expect(response).to have_http_status(:forbidden) # 403
+  end
+
+  it "can protect a page" do
+    page = documentation_page_2
+    expect(page).not_to be_protected
+    expect(post(:protect, :params => { :project_id => 'ecookbook', :id => page.title, :protected => '1' })).to redirect_to(project_documentation_page_path(project, page.title))
+    expect(page.reload).to be_protected
+  end
+
+  it "can unprotect a page" do
+    page = documentation_page_1
+    expect(page).to be_protected
+    expect(post(:protect, :params => { :project_id => 'ecookbook', :id => page.title, :protected => '0' })).to redirect_to(project_documentation_page_path(project, page.title))
+    expect(page.reload).not_to be_protected
+  end
+
+  it "renames a page with redirect" do
+    expect(
+      post :rename, :params => {
+        :project_id => project.identifier,
+        :id => documentation_page_2.title,
+        :wiki_page => {
+          :title => 'Another renamed documentation page',
+          :redirect_existing_links => 1
+        }
+      }).to redirect_to({ :action => 'show', :project_id => 'ecookbook', :id => 'Another_renamed_documentation_page' })
+    expect(documentation.find_page("Another Documentation Page")).to_not be_nil
+    expect(documentation.find_page("Another Documentation Page", :with_redirect => false)).to be_nil
   end
 
 end
