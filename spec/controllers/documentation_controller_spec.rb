@@ -164,4 +164,10 @@ describe DocumentationController, type: :controller do
     expect(documentation.find_page("Another Documentation Page", :with_redirect => false)).to be_nil
   end
 
+  it "deletes a page without children and do not ask confirmation" do
+    expect(
+      delete :destroy, :params => { :project_id => project.identifier, :id => "Another Documentation Page" }
+    ).to redirect_to({ :action => 'index', :project_id => 'ecookbook' })
+  end
+
 end

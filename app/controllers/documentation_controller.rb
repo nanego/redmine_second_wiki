@@ -158,6 +158,41 @@ class DocumentationController < WikiController
     redirect_to project_documentation_page_path(@project, @page.title)
   end
 
+  def destroy
+    return render_403 unless editable?
+
+    @descendants_count = @page.descendants.size
+    if @descendants_count > 0
+      case params[:todo]
+      when 'nullify'
+        # Nothing to do
+      when 'destroy'
+        # Removes all its descendants
+        @page.descendants.each(&:destroy)
+      when 'reassign'
+        # Reassign children to another parent page
+        reassign_to = @wiki.pages.find_by_id(params[:reassign_to_id].to_i)
+        return unless reassign_to
+        @page.children.each do |child|
+          child.update_attribute(:parent, reassign_to)
+        end
+      else
+        @reassignable_to = @wiki.pages - @page.self_and_descendants
+        # display the destroy form if it's a user request
+        return unless api_request?
+      end
+    end
+    @page.destroy
+    respond_to do |format|
+      #############
+      # START PATCH
+      format.html { redirect_to project_documentation_index_path(@project) }
+      # END PATCH
+      #############
+      format.api { render_api_ok }
+    end
+  end
+
   private
 
   # Finds the requested page or a new page if it doesn't exist

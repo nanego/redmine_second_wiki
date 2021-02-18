@@ -2,6 +2,35 @@ require_dependency 'application_helper'
 
 module ApplicationHelper
 
+  def render_documentation_page_hierarchy(pages, node=nil, options={})
+    content = +''
+    if pages[node]
+      content << "<ul class=\"pages-hierarchy\">\n"
+      pages[node].each do |page|
+        content << "<li>"
+        if controller.controller_name == 'wiki' && controller.action_name == 'export'
+          href = "##{page.title}"
+        else
+          ##############
+          ## START PATCH
+          href = {:controller => 'documentation', :action => 'show', :project_id => page.project, :id => page.title, :version => nil}
+          ## END PATCH
+          ##############
+        end
+        content << link_to(h(page.pretty_title), href,
+                           :title => (options[:timestamp] && page.updated_on ? l(:label_updated_time, distance_of_time_in_words(Time.now, page.updated_on)) : nil))
+        ##############
+        ## START PATCH
+        content << "\n" + render_documentation_page_hierarchy(pages, page.id, options) if pages[page.id]
+        ## END PATCH
+        ##############
+        content << "</li>\n"
+      end
+      content << "</ul>\n"
+    end
+    content.html_safe
+  end
+
   # Wiki links
   #
   # Examples:

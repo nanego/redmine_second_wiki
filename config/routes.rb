@@ -1,5 +1,7 @@
 RedmineApp::Application.routes.draw do
 
+  match 'projects/:id/documentation/destroy', :to => 'documentations#destroy', :via => [:get, :post]
+
   resources :projects do
     match 'documentation/index', :controller => 'documentation', :action => 'index', :via => :get
     resources :documentation, :except => [:index, :create], :as => 'documentation_page' do

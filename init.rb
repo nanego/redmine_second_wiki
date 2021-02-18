@@ -27,18 +27,6 @@ Redmine::Plugin.register :redmine_second_wiki do
     permission :manage_documentation, {:documentations => [:edit, :destroy], :documentation => :rename}, :require => :member
   end
 
-=begin
-  - :view_wiki_pages
-  - :export_wiki_pages
-  - :view_wiki_edits
-  - :edit_wiki_pages
-  - :delete_wiki_pages_attachments
-  - :protect_wiki_pages
-  - :delete_wiki_pages
-  - :rename_wiki_pages
-  - :manage_wiki
-=end
-
 end
 
 Redmine::MenuManager.map :project_menu do |menu|
