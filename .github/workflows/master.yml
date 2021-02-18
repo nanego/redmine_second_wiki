@@ -125,7 +125,7 @@ jobs:
         working-directory: redmine
         run: |
           bundle exec rake db:create db:migrate redmine:plugins:migrate
-          cp -i plugins/*/spec/fixtures/*yml test/fixtures/
+          # cp -i plugins/*/spec/fixtures/*yml test/fixtures/
           bundle exec rails db:fixtures:load
           bundle exec rails test:scm:setup:subversion
 
