@@ -56,7 +56,7 @@ RSpec.describe "creating an issue", type: :system do
 
     expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
 
-    click_on "Edit"
+    find("#content").find("a.icon-edit").click
     expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation/edit')
     fill_in 'content[text]', :with => %{# Documentation
 
