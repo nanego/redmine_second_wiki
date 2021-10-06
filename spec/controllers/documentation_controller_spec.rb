@@ -1,4 +1,5 @@
 require "spec_helper"
+require "rails_helper"
 require "active_support/testing/assertions"
 
 describe DocumentationController, type: :controller do
@@ -78,6 +79,7 @@ describe DocumentationController, type: :controller do
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :view_documentation_pages
+    manager_role.add_permission! :view_wiki_pages
     get :show, :params => { :project_id => 'ecookbook' }
     expect(response).to have_http_status(:forbidden) # 403
   end
@@ -93,6 +95,19 @@ describe DocumentationController, type: :controller do
     get :show, :params => { :project_id => 'ecookbook' }
     expect(response).to be_successful
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation.txt', false
+  end
+
+  it "shows edit sidebar link" do
+    get :show, :params => { :project_id => 'ecookbook' }
+    expect(response).to be_successful
+    assert_select 'a[href=?]', '/projects/ecookbook/documentation/sidebar/edit'
+
+    # Ensure we don't have access without the right permission
+    manager_role.remove_permission! :edit_documentation_pages
+    manager_role.remove_permission! :protect_documentation_pages
+    get :show, :params => { :project_id => 'ecookbook' }
+    expect(response).to be_successful
+    assert_select 'a[href=?]', '/projects/ecookbook/documentation/sidebar/edit', false
   end
 
   it "shows document page with name" do
@@ -115,6 +130,18 @@ describe DocumentationController, type: :controller do
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation/1', :text => /Previous/
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation/2/diff', :text => /diff/
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation/3', :text => /Next/
+  end
+
+  it "shows old version with attachments" do
+    page = WikiPage.find(4)
+    page.update_column(:wiki_id, documentation.id)
+    assert page.attachments.any?
+    content = page.content
+    content.text = "update"
+    content.save!
+
+    get :show, :params => { :project_id => 'ecookbook', :id => page.title, :version => '1' }
+    expect(response).to be_successful
   end
 
   it "denies to show old version without permission" do
@@ -168,6 +195,26 @@ describe DocumentationController, type: :controller do
     expect(
       delete :destroy, :params => { :project_id => project.identifier, :id => "Another Documentation Page" }
     ).to redirect_to({ :action => 'index', :project_id => 'ecookbook' })
+  end
+
+  it "creates new page with attachments" do
+    assert_difference 'WikiPage.count' do
+      assert_difference 'Attachment.count' do
+        put :update, :params => {
+          :project_id => 1,
+          :id => 'New doc page',
+          :content => {
+            :comments => 'Created the page',
+            :text => "h1. New doc page\n\nThis is a new page",
+            :version => 0
+          },
+          :attachments => {'1' => {'file' => uploaded_test_file('testfile.txt', 'text/plain')}}
+        }
+      end
+    end
+    page = Project.find(1).documentation.find_page('New doc page')
+    assert_equal 1, page.attachments.count
+    assert_equal 'testfile.txt', page.attachments.first.filename
   end
 
 end

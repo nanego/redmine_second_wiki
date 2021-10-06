@@ -35,6 +35,7 @@ RSpec.describe "creating an issue", type: :system do
   before do
     log_user('jsmith', 'jsmith')
     Project.find(1).enable_module!(:documentation)
+
     manager_role = Role.find(1)
     [:view_documentation_pages,
      :view_documentation_edits,
@@ -46,6 +47,17 @@ RSpec.describe "creating an issue", type: :system do
      :protect_documentation_pages,
      :manage_documentation].each do |permission|
       manager_role.add_permission!(permission)
+    end
+    [:view_wiki_pages,
+     :view_wiki_edits,
+     :export_wiki_pages,
+     :edit_wiki_pages,
+     :rename_wiki_pages,
+     :delete_wiki_pages,
+     :delete_wiki_pages_attachments,
+     :protect_wiki_pages,
+     :manage_wiki].each do |permission|
+      manager_role.remove_permission!(permission)
     end
 
   end
@@ -72,6 +84,14 @@ content}
 
     expect(page).to have_current_path('/projects/ecookbook/documentation/New_Title')
 
+  end
+
+  it "forbids to see and edit a wiki without permissions" do
+    visit '/projects/ecookbook/wiki'
+    expect(page).to have_selector("h2", text: "403") # Forbidden
+
+    visit '/projects/ecookbook/wiki/Wiki/edit'
+    expect(page).to have_selector("h2", text: "403")
   end
 
 end
