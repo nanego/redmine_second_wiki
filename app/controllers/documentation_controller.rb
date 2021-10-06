@@ -205,12 +205,7 @@ class DocumentationController < WikiController
   end
 
   def load_pages_for_index
-    puts "--> LOADS PAGES FROM DOCUMENTATION CONTROLLER <--"
-
-    @pages = @wiki.pages.with_updated_on.
-      includes(:wiki => :project).
-      includes(:parent).
-      to_a
+    @pages = @wiki.find_page(@wiki.documentation_start_page).self_and_descendants
   end
 
 end
