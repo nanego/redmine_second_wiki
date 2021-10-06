@@ -33,7 +33,9 @@ describe DocumentationController, type: :controller do
                               wiki_content_id: documentation_content_1.id,
                               data: "h1. First documentation page (version 3)") }
 
-  let!(:documentation_page_2) { WikiPage.create(title: "Another Documentation Page", wiki_id: documentation.id) }
+  let!(:documentation_page_2) { WikiPage.create(title: "Another Documentation Page",
+                                                wiki_id: documentation.id,
+                                                parent_id: documentation_page_1.id) }
   let!(:documentation_content_2) { WikiContent.create(page_id: documentation_page_2.id,
                                                       text: "h1. Another documentation page",
                                                       author_id: 1, version: 3) }
@@ -84,6 +86,11 @@ describe DocumentationController, type: :controller do
     expect(response).to have_http_status(:forbidden) # 403
   end
 
+  it "forbids to see the standard wiki pages from documentation controller" do
+    get :show, :params => { :project_id => 1, :id => 'Another_page' } # Wiki page, not documentation
+    expect(response).to have_http_status(:forbidden) # 403
+  end
+
   it "shows the export link" do
     # manager_role.add_permission! :export_documentation_pages
     get :show, :params => { :project_id => 'ecookbook' }
@@ -97,10 +104,10 @@ describe DocumentationController, type: :controller do
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation.txt', false
   end
 
-  it "shows edit sidebar link" do
+  it "does not show edit sidebar link" do
     get :show, :params => { :project_id => 'ecookbook' }
     expect(response).to be_successful
-    assert_select 'a[href=?]', '/projects/ecookbook/documentation/sidebar/edit'
+    assert_select 'a[href=?]', '/projects/ecookbook/documentation/sidebar/edit', false
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :edit_documentation_pages
@@ -111,12 +118,13 @@ describe DocumentationController, type: :controller do
   end
 
   it "shows document page with name" do
-    get :show, :params => { :project_id => 'ecookbook', :id => 'Another_Documentation_Page' }
+    get :show, :params => { :project_id => 'ecookbook', :id => "Another Documentation Page" }
     expect(response).to be_successful
     assert_select 'h1', :text => /Another documentation page/
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :view_documentation_pages
+    manager_role.add_permission! :view_wiki_pages
     get :show, :params => { :project_id => 'ecookbook', :id => 'Another_Documentation_Page' }
     expect(response).to have_http_status(:forbidden) # 403
   end
@@ -135,6 +143,7 @@ describe DocumentationController, type: :controller do
   it "shows old version with attachments" do
     page = WikiPage.find(4)
     page.update_column(:wiki_id, documentation.id)
+    page.update_column(:parent_id, documentation_page_1.id)
     assert page.attachments.any?
     content = page.content
     content.text = "update"
@@ -203,18 +212,20 @@ describe DocumentationController, type: :controller do
         put :update, :params => {
           :project_id => 1,
           :id => 'New doc page',
+          :parent_id => documentation_page_1.id,
           :content => {
             :comments => 'Created the page',
             :text => "h1. New doc page\n\nThis is a new page",
             :version => 0
           },
-          :attachments => {'1' => {'file' => uploaded_test_file('testfile.txt', 'text/plain')}}
+          :attachments => { '1' => { 'file' => uploaded_test_file('testfile.txt', 'text/plain') } }
         }
       end
     end
-    page = Project.find(1).documentation.find_page('New doc page')
+    page = documentation.find_page('New doc page')
     assert_equal 1, page.attachments.count
     assert_equal 'testfile.txt', page.attachments.first.filename
+    expect(page.documentation_page?).to be_truthy
   end
 
 end

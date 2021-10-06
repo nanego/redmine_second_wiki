@@ -8,6 +8,7 @@ class DocumentationController < WikiController
       deny_access
       return
     end
+    return render_403 if @page.wiki_page?
     @content = @page.content_for_version(params[:version])
     if @content.nil?
       if User.current.allowed_to?(:edit_documentation_pages, @project) && editable? && !api_request?
@@ -91,7 +92,9 @@ class DocumentationController < WikiController
   def update
     @page = @wiki.find_or_new_page(params[:id])
 
+    @page.parent = @wiki.root_documentation_page if @page.parent.blank?
     return render_403 unless editable?
+
     was_new_page = @page.new_record?
     @page.safe_attributes = params[:wiki_page]
 
@@ -155,6 +158,7 @@ class DocumentationController < WikiController
   end
 
   def protect
+    return render_403 if @page.wiki_page?
     @page.update_attribute :protected, params[:protected]
     redirect_to project_documentation_page_path(@project, @page.title)
   end
@@ -207,6 +211,11 @@ class DocumentationController < WikiController
 
   def load_pages_for_index
     @pages = @wiki.documentation_pages
+  end
+
+  # Returns true if the current user is allowed to edit the page, otherwise false
+  def editable?(page = @page)
+    page.editable_by?(User.current) && page.documentation_page?
   end
 
 end

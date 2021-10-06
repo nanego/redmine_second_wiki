@@ -50,13 +50,11 @@ class WikiPage < ActiveRecord::Base
     end
   end
 
-  private
-
   def documentation_page?
     if root_page.present?
       root_page.pretty_title == wiki.documentation_start_page
     else
-      true
+      false
     end
   end
 

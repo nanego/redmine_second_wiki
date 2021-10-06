@@ -83,7 +83,6 @@ content}
     click_on 'Rename'
 
     expect(page).to have_current_path('/projects/ecookbook/documentation/New_Title')
-
   end
 
   it "forbids to see and edit a wiki without permissions" do
@@ -91,7 +90,13 @@ content}
     expect(page).to have_selector("h2", text: "403") # Forbidden
 
     visit '/projects/ecookbook/wiki/Wiki/edit'
-    expect(page).to have_selector("h2", text: "403")
+    expect(page).to have_selector("h2", text: "403") # Forbidden
+
+    visit '/projects/ecookbook/documentation/Wiki'
+    expect(page).to have_selector("h2", text: "403") # Forbidden
+
+    visit '/projects/ecookbook/documentation/Wiki/edit'
+    expect(page).to have_selector("h2", text: "403") # Forbidden
   end
 
 end
