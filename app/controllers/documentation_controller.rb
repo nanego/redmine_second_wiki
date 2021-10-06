@@ -74,7 +74,8 @@ class DocumentationController < WikiController
 
         #############
         # START PATCH
-        path = project_documentation_page_path(@project, @page.title, :parent => params[:parent])
+        parent = params[:parent] || @wiki.documentation_start_page
+        path = project_documentation_page_path(@project, @page.title, :parent => parent)
         # END PATCH
         #############
         #
@@ -205,7 +206,7 @@ class DocumentationController < WikiController
   end
 
   def load_pages_for_index
-    @pages = @wiki.find_page(@wiki.documentation_start_page).self_and_descendants
+    @pages = @wiki.documentation_pages
   end
 
 end
