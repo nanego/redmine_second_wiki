@@ -2,13 +2,14 @@ require_dependency 'wiki_controller'
 
 class DocumentationController < WikiController
 
+  append_before_action :redirect_if_wiki, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
+
   # display a page (in editing mode if it doesn't exist)
   def show
     if params[:version] && !User.current.allowed_to?(:view_documentation_edits, @project)
       deny_access
       return
     end
-    return render_403 if @page.wiki_page?
     @content = @page.content_for_version(params[:version])
     if @content.nil?
       if User.current.allowed_to?(:edit_documentation_pages, @project) && editable? && !api_request?
@@ -158,7 +159,6 @@ class DocumentationController < WikiController
   end
 
   def protect
-    return render_403 if @page.wiki_page?
     @page.update_attribute :protected, params[:protected]
     redirect_to project_documentation_page_path(@project, @page.title)
   end
@@ -216,6 +216,10 @@ class DocumentationController < WikiController
   # Returns true if the current user is allowed to edit the page, otherwise false
   def editable?(page = @page)
     page.editable_by?(User.current) && page.documentation_page?
+  end
+
+  def redirect_if_wiki
+    return render_403 if @page.wiki_page?
   end
 
 end
