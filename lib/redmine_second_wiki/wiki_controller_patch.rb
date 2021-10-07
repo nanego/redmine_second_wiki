@@ -17,7 +17,7 @@ class WikiController
   end
 
   def redirect_if_documentation
-    if controller_name != 'documentation'
+    if @page.present? && controller_name != 'documentation'
       return render_403 if @page.documentation_page?
     end
   end
