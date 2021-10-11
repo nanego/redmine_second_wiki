@@ -2,7 +2,7 @@ require_dependency 'wiki_controller'
 
 class DocumentationController < WikiController
 
-  append_before_action :redirect_if_wiki, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
+  append_before_action :render_403_if_wiki, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
 
   # display a page (in editing mode if it doesn't exist)
   def show
@@ -218,8 +218,8 @@ class DocumentationController < WikiController
     page.editable_by?(User.current) && page.documentation_page?
   end
 
-  def redirect_if_wiki
-    return render_403 if @page.wiki_page?
+  def render_403_if_wiki
+    return render_403 if @page.present? && @page.wiki_page?
   end
 
 end
