@@ -219,7 +219,7 @@ class DocumentationController < WikiController
   end
 
   def render_403_if_wiki
-    return render_403 if @page.present? && @page.wiki_page?
+    return render_403 if @page.persisted? && @page.wiki_page?
   end
 
 end
