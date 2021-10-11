@@ -89,14 +89,17 @@ content}
     visit '/projects/ecookbook/wiki'
     expect(page).to have_selector("h2", text: "403") # Forbidden
 
-    visit '/projects/ecookbook/wiki/Wiki/edit'
+    visit '/projects/ecookbook/wiki/Another_page/edit'
     expect(page).to have_selector("h2", text: "403") # Forbidden
 
-    visit '/projects/ecookbook/documentation/Wiki'
+    visit '/projects/ecookbook/documentation/Another_page'
     expect(page).to have_selector("h2", text: "403") # Forbidden
 
-    visit '/projects/ecookbook/documentation/Wiki/edit'
+    visit '/projects/ecookbook/documentation/Another_page/edit'
     expect(page).to have_selector("h2", text: "403") # Forbidden
+
+    visit '/projects/ecookbook/documentation/New_page_not_persisted'
+    expect(page).to have_selector("h2", text: "New page not persisted") # New page, OK
   end
 
 end
