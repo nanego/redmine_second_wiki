@@ -2,7 +2,7 @@ require_dependency 'application_helper'
 
 module ApplicationHelper
 
-  def render_documentation_page_hierarchy(pages, node=nil, options={})
+  def render_documentation_page_hierarchy(pages, node = nil, options = {})
     content = +''
     if pages[node]
       content << "<ul class=\"pages-hierarchy\">\n"
@@ -13,7 +13,7 @@ module ApplicationHelper
         else
           ##############
           ## START PATCH
-          href = {:controller => 'documentation', :action => 'show', :project_id => page.project, :id => page.title, :version => nil}
+          href = { :controller => 'documentation', :action => 'show', :project_id => page.project, :id => page.title, :version => nil }
           ## END PATCH
           ##############
         end
@@ -69,34 +69,39 @@ module ApplicationHelper
           # check if page exists
           wiki_page = link_project.wiki.find_page(page)
           url =
-              if anchor.present? && wiki_page.present? &&
-                  (obj.is_a?(WikiContent) || obj.is_a?(WikiContent::Version)) &&
-                  obj.page == wiki_page
-                "##{anchor}"
+            if anchor.present? && wiki_page.present? &&
+              (obj.is_a?(WikiContent) || obj.is_a?(WikiContent::Version)) &&
+              obj.page == wiki_page
+              "##{anchor}"
+            else
+              case options[:wiki_links]
+              when :local
+                "#{page.present? ? Wiki.titleize(page) : ''}.html" + (anchor.present? ? "##{anchor}" : '')
+              when :anchor
+                # used for single-file wiki export
+                "##{page.present? ? Wiki.titleize(page) : title}" + (anchor.present? ? "_#{anchor}" : '')
               else
-                case options[:wiki_links]
-                when :local
-                  "#{page.present? ? Wiki.titleize(page) : ''}.html" + (anchor.present? ? "##{anchor}" : '')
-                when :anchor
-                  # used for single-file wiki export
-                  "##{page.present? ? Wiki.titleize(page) : title}" + (anchor.present? ? "_#{anchor}" : '')
+                wiki_page_id = page.present? ? Wiki.titleize(page) : nil
+                parent = wiki_page.nil? && obj.is_a?(WikiContent) && obj.page && project == link_project ? obj.page.title : nil
+
+                ############
+                # START PATCH
+
+                if wiki_page&.documentation_page? || controller.try(:controller_name) == 'documentation'
+                  targeted_controller = 'documentation'
                 else
-                  wiki_page_id = page.present? ? Wiki.titleize(page) : nil
-                  parent = wiki_page.nil? && obj.is_a?(WikiContent) && obj.page && project == link_project ? obj.page.title : nil
-
-                  ############
-                  # START PATCH
-
-                  url_for(:only_path => only_path, :controller => controller.controller_name == 'documentation' ? 'documentation' : 'wiki',
-                          :action => 'show', :project_id => link_project,
-                          :id => wiki_page_id, :version => nil, :anchor => anchor,
-                          :parent => parent)
-
-                  # END PATCH
-                  ############
-
+                  targeted_controller = 'wiki'
                 end
+                url_for(:only_path => only_path, :controller => targeted_controller,
+                        :action => 'show', :project_id => link_project,
+                        :id => wiki_page_id, :version => nil, :anchor => anchor,
+                        :parent => parent)
+
+                # END PATCH
+                ############
+
               end
+            end
           link_to(title.present? ? title.html_safe : h(page), url, :class => ('wiki-page' + (wiki_page ? '' : ' new')))
         else
           # project or wiki doesn't exist
