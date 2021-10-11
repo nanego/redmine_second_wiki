@@ -17,7 +17,7 @@ class WikiController
   end
 
   def render_403_if_documentation
-    if @page.persisted? && controller_name != 'documentation' && @page.documentation_page?
+    if @page&.persisted? && controller_name != 'documentation' && @page.documentation_page?
       return render_403
     end
   end

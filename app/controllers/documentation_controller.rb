@@ -93,7 +93,7 @@ class DocumentationController < WikiController
   def update
     @page = @wiki.find_or_new_page(params[:id])
 
-    @page.parent = @wiki.root_documentation_page if @page.parent.blank?
+    @page.parent = @wiki.root_documentation_page if @page.parent.blank? && @wiki.root_documentation_page != @page
     return render_403 unless editable?
 
     was_new_page = @page.new_record?
@@ -219,7 +219,7 @@ class DocumentationController < WikiController
   end
 
   def render_403_if_wiki
-    return render_403 if @page.persisted? && @page.wiki_page?
+    return render_403 if @page&.persisted? && @page.wiki_page?
   end
 
 end

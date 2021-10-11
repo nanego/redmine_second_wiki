@@ -54,7 +54,7 @@ class WikiPage < ActiveRecord::Base
     if root_page.present?
       root_page.pretty_title == wiki.documentation_start_page
     else
-      self.persisted? ? false : true
+      self&.persisted? ? false : true
     end
   end
 
