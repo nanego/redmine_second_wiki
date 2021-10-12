@@ -2,6 +2,7 @@ require_dependency 'application_helper'
 
 module ApplicationHelper
 
+  # Copied from standard method: render_page_hierarchy
   def render_documentation_page_hierarchy(pages, node = nil, options = {})
     content = +''
     if pages[node]
