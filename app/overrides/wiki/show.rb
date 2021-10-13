@@ -33,3 +33,12 @@ Deface::Override.new :virtual_path => "wiki/show",
   :id => @page.title, :project_id => @page.project,
   :version => @content.version %>
 EOS
+
+Deface::Override.new :virtual_path => "wiki/show",
+                     :name => "adapt-add-attachment-form",
+                     :replace => "erb[loud]:contains('form_tag')",
+                     :text => <<FORM_TAG
+    <%= form_tag({:controller => controller.controller_name, :action => 'add_attachment',
+                  :project_id => @project, :id => @page.title},
+                 :multipart => true, :id => "add_attachment_form") do %>
+FORM_TAG

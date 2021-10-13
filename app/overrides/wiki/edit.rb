@@ -20,3 +20,16 @@ Deface::Override.new :virtual_path => "wiki/edit",
                  wiki_pages -
                  @page.self_and_descendants, @page.parent) %>
 PARENT_PAGES
+
+Deface::Override.new :virtual_path => "wiki/edit",
+                     :name         => "replace-preview-link",
+                     :replace      => "erb[loud]:contains('preview_project_wiki_page_path')",
+                     :text         => <<PREVIEW_LINK
+<%  if controller.controller_name == 'documentation'
+      link = preview_project_documentation_page_path(:project_id => @project, :id => @page.title)
+    else
+      link = preview_project_wiki_page_path(:project_id => @project, :id => @page.title)
+    end
+%>
+<%= wikitoolbar_for 'content_text', link %>
+PREVIEW_LINK
