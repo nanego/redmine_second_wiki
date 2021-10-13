@@ -2,6 +2,15 @@ require_dependency 'application_helper'
 
 module ApplicationHelper
 
+  RECORD_LINK['WikiPage'] = lambda do |wiki_page|
+    if wiki_page.try(:documentation_page?)
+      link = project_documentation_page_path(wiki_page.project, wiki_page.title)
+    else
+      link = project_wiki_page_path(wiki_page.project, wiki_page.title)
+    end
+    link_to(wiki_page.pretty_title, link)
+  end
+
   # Copied from standard method: render_page_hierarchy
   def render_documentation_page_hierarchy(pages, node = nil, options = {})
     content = +''
@@ -113,4 +122,5 @@ module ApplicationHelper
       end
     end
   end
+
 end
