@@ -75,7 +75,7 @@ describe DocumentationController, type: :controller do
   end
 
   it "shows document start page" do
-    get :show, :params => { :project_id => 'ecookbook' }
+    get :show, params: { project_id: 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
     assert_select 'h1', :text => /First documentation page/
 
@@ -86,6 +86,12 @@ describe DocumentationController, type: :controller do
     expect(response).to have_http_status(:forbidden) # 403
   end
 
+  it 'redirects documentation root page to url with page ID' do
+    expect(
+      get :show, params: { project_id: 'ecookbook'}
+    ).to redirect_to('/projects/ecookbook/documentation/Documentation')
+  end
+
   it "forbids to see the standard wiki pages from documentation controller" do
     get :show, :params => { :project_id => 1, :id => 'Another_page' } # Wiki page, not documentation
     expect(response).to have_http_status(:forbidden) # 403
@@ -93,26 +99,26 @@ describe DocumentationController, type: :controller do
 
   it "shows the export link" do
     # manager_role.add_permission! :export_documentation_pages
-    get :show, :params => { :project_id => 'ecookbook' }
+    get :show, params: { project_id: 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation.txt'
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :export_documentation_pages
-    get :show, :params => { :project_id => 'ecookbook' }
+    get :show, :params => { :project_id => 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/Documentation.txt', false
   end
 
   it "does not show edit sidebar link" do
-    get :show, :params => { :project_id => 'ecookbook' }
+    get :show, params: { project_id: 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/sidebar/edit', false
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :edit_documentation_pages
     manager_role.remove_permission! :protect_documentation_pages
-    get :show, :params => { :project_id => 'ecookbook' }
+    get :show, :params => { :project_id => 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
     assert_select 'a[href=?]', '/projects/ecookbook/documentation/sidebar/edit', false
   end

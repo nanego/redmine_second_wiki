@@ -6,6 +6,12 @@ class DocumentationController < WikiController
 
   # display a page (in editing mode if it doesn't exist)
   def show
+
+    # DRAWIO Plugin compatibility: documentation ID is required
+    if params[:id].blank? && @page == @wiki.root_documentation_page
+      redirect_to_page(@page)
+    end
+
     if params[:version] && !User.current.allowed_to?(:view_documentation_edits, @project)
       deny_access
       return
@@ -93,7 +99,7 @@ class DocumentationController < WikiController
   def update
     @page = @wiki.find_or_new_page(params[:id])
 
-    @page.parent = @wiki.root_documentation_page if @page.parent.blank? && @wiki.root_documentation_page != @page
+    @page.parent = @wiki.root_documentation_page if @page.parent.blank? && @wiki.root_wiki_page != @page && @wiki.root_documentation_page != @page
     return render_403 unless editable?
 
     was_new_page = @page.new_record?

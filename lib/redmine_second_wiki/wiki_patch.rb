@@ -15,4 +15,8 @@ class Wiki < ActiveRecord::Base
     find_page(documentation_start_page)
   end
 
+  def root_wiki_page
+    find_page(start_page)
+  end
+
 end

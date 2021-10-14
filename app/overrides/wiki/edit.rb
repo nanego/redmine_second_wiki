@@ -10,15 +10,12 @@ Deface::Override.new :virtual_path => "wiki/edit",
                      :replace      => "erb[loud]:contains('fp.select :parent_id')",
                      :text         => <<PARENT_PAGES
 <%  if controller.controller_name == 'documentation'
-      wiki_pages = @wiki.documentation_pages
+      options_for_select = wiki_page_options_for_select(@wiki.documentation_pages - @page.self_and_descendants, @page.parent)
     else
-      wiki_pages = @wiki.pages.includes(:parent).to_a
+      options_for_select = content_tag('option', '', :value => '') + wiki_page_options_for_select(@wiki.pages.includes(:parent).to_a - @wiki.documentation_pages - @page.self_and_descendants, @page.parent)
     end
 %>
-<%= fp.select :parent_id,
-               wiki_page_options_for_select(
-                 wiki_pages -
-                 @page.self_and_descendants, @page.parent) %>
+<%= fp.select :parent_id, options_for_select %>
 PARENT_PAGES
 
 Deface::Override.new :virtual_path => "wiki/edit",
