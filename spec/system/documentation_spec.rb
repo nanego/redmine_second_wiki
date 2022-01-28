@@ -117,6 +117,7 @@ content}
 
     visit '/projects/ecookbook/documentation/documentation'
 
+    Capybara.default_max_wait_time = 10
     page.find :css, "legend[class='icon icon-collapsed']", wait: 10
     find("legend[class='icon icon-collapsed']").click
 
