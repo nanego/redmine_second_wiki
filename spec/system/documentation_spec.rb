@@ -115,10 +115,12 @@ content}
     )
     Attachment.find(10).update_attributes(:container_id => WikiPage.last().id, :container_type => 'WikiPage')
 
-    visit '/projects/ecookbook/documentation/documentation'
+    visit '/projects/ecookbook/documentation/Documentation'
 
-    expect(page).to have_css("a[class='icon-only icon-edit']", visible: false)
-    expect(page).to have_css("a[class='delete icon-only icon-del']", visible: false)
+    find("legend[class='icon icon-collapsed']").click
+
+    expect(page).to have_css("a[class='icon-only icon-edit']")
+    expect(page).to have_css("a[class='delete icon-only icon-del']")
 
   end
 
