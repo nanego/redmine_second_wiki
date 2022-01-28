@@ -104,15 +104,10 @@ content}
 
   # Before this correction, the user cannot see the image, delete it, or modify it
   it "Should show both icons of edit and delete attachment when the user has the permissions(view, delete, edit) of documentation" do
-    wiki_content = WikiContent.create!(
-      :text => 'h1. Documentation',
-      :author_id => 2,
-      :page => WikiPage.create!(:title => 'Documentation',
-                                :wiki => Wiki.create!(:project_id => 1,
-                                                      :start_page => 'Wiki',
-                                                      :documentation_start_page => 'Documentation'),
-                                                      )
-    )
+    visit '/projects/ecookbook/documentation'
+    click_on 'Save'
+
+    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
     Attachment.find(10).update_attributes(:container_id => WikiPage.last().id, :container_type => 'WikiPage')
 
     visit '/projects/ecookbook/documentation/Documentation'
