@@ -117,6 +117,7 @@ content}
 
     visit '/projects/ecookbook/documentation/documentation'
 
+    page.find :css, "legend[class='icon icon-collapsed']", wait: 10
     find("legend[class='icon icon-collapsed']").click
 
     expect(page).to have_css("a[class='icon-only icon-edit']")
