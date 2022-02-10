@@ -3,7 +3,6 @@ require_dependency 'wiki_controller'
 class DocumentationController < WikiController
 
   append_before_action :render_403_if_wiki, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
-  append_before_action :set_attachable_options, :only => [:show]
 
   # display a page (in editing mode if it doesn't exist)
   def show
@@ -227,12 +226,6 @@ class DocumentationController < WikiController
 
   def render_403_if_wiki
     return render_403 if @page&.persisted? && @page.wiki_page?
-  end
-
-  def set_attachable_options
-    @page.class.attachable_options[:view_permission] = "view_documentation_pages".to_sym
-    @page.class.attachable_options[:edit_permission] = "edit_documentation_pages".to_sym
-    @page.class.attachable_options[:delete_permission] = "edit_documentation_pages".to_sym
   end
 
 end
