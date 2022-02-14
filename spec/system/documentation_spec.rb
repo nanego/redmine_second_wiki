@@ -118,4 +118,36 @@ content}
     expect(page).to have_css("a[class='delete icon-only icon-del']")
   end
 
+  it "shows both icons to edit and delete attachment when the user has the permissions(view, delete, edit) on wiki and no longer has permissions on the documentation" do
+
+    manager_role = Role.find(1)
+    [:view_wiki_pages,
+     :view_wiki_edits,
+     :export_wiki_pages,
+     :edit_wiki_pages,
+     :rename_wiki_pages,
+     :delete_wiki_pages,
+     :delete_wiki_pages_attachments,
+     :protect_wiki_pages,
+     :manage_wiki].each do |permission|
+      manager_role.add_permission!(permission)
+    end
+
+    # add a documentation
+    visit '/projects/ecookbook/documentation'
+    click_on 'Save'
+
+    # disable module of documentation
+    Project.find(1).disable_module!(:documentation)
+
+    visit '/projects/ecookbook/wiki'
+
+    expect(page).to have_current_path('/projects/ecookbook/wiki')
+
+    find("legend[class='icon icon-collapsed']").click
+
+    expect(page).to have_css("a[class='icon-only icon-edit']")
+    expect(page).to have_css("a[class='delete icon-only icon-del']")
+
+  end
 end
