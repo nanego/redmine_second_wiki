@@ -10,7 +10,11 @@ Deface::Override.new :virtual_path => "wiki/index",
                      :replace      => "erb[loud]:contains('link_to l(:label_wiki_page_new)')",
                      :text         => <<LINK
 <% if controller.controller_name == 'documentation' %>
-  <%= link_to l(:label_wiki_page_new), new_project_documentation_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <% if @pages.empty? %>
+    <%= link_to l(:label_documentation_page_new), project_documentation_page_path(@project, 'Documentation'), :class => 'icon icon-add' %>
+  <% else %>
+    <%= link_to l(:label_documentation_page_new), new_project_documentation_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <% end %>
 <% else %>
   <%= link_to l(:label_wiki_page_new), new_project_wiki_page_path(@project), :remote => true, :class => 'icon icon-add' %>
 <% end %>

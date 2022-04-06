@@ -7,3 +7,14 @@ Deface::Override.new :virtual_path => "wiki/_new_modal",
             :method => 'post',
             :remote => true do |f| %>
 LINK
+
+Deface::Override.new :virtual_path => "wiki/_new_modal",
+                     :name         => "replace-title-for-documentation",
+                     :replace      => "h3.title",
+                     :text         => <<TITLE
+<% if controller.controller_name == 'documentation' %>
+  <h3 class="title"><%=l(:label_documentation_page_new)%></h3>
+<% else %>
+  <h3 class="title"><%=l(:label_wiki_page_new)%></h3>
+<% end %>
+TITLE
