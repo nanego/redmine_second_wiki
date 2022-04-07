@@ -15,3 +15,5 @@ en:
   label_documentation_page: Documentation page
   label_documentation_page_plural: Documentation pages
   label_documentation_page_new: New documentation page
+  include_documentation_pages: "Include pages from Documentation"
+  include_wiki_pages: "Include pages from Wiki"

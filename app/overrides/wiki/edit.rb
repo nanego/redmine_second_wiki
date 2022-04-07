@@ -9,13 +9,23 @@ Deface::Override.new :virtual_path => "wiki/edit",
                      :name         => "scope-available-parent-pages",
                      :replace      => "erb[loud]:contains('fp.select :parent_id')",
                      :text         => <<PARENT_PAGES
-<%  if controller.controller_name == 'documentation'
-      options_for_select = wiki_page_options_for_select(@wiki.documentation_pages - @page.self_and_descendants, @page.parent)
-    else
-      options_for_select = content_tag('option', '', :value => '') + wiki_page_options_for_select(@wiki.pages.includes(:parent).to_a - @wiki.documentation_pages - @page.self_and_descendants, @page.parent)
-    end
+<%  
+if params[:unlock_parents] == 'true' && User.current.admin?
+  @available_parents = @wiki.pages.includes(:parent).to_a
+else
+  if controller.controller_name == 'documentation'
+    @available_parents = @wiki.documentation_pages - @page.self_and_descendants
+  else
+    @available_parents = @wiki.pages.includes(:parent).to_a - @wiki.documentation_pages - @page.self_and_descendants
+  end
+end
+options_for_select = wiki_page_options_for_select(@available_parents, @page.parent)
+options_for_select = content_tag('option', '', :value => '') + options_for_select if controller.controller_name != 'documentation'
 %>
-<%= fp.select :parent_id, options_for_select %>
+<%= fp.select :parent_id, options_for_select %> 
+<% if User.current.admin? %> 
+  <%= link_to l("include_" + (controller.controller_name == 'documentation' ? 'wiki' : 'documentation') + '_pages' ), url_for(unlock_parents: true) %> 
+<% end %>
 PARENT_PAGES
 
 Deface::Override.new :virtual_path => "wiki/edit",

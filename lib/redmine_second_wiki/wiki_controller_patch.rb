@@ -2,7 +2,7 @@ require_dependency 'wiki_controller'
 
 class WikiController
 
-  append_before_action :render_403_if_documentation, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
+  append_before_action :redirect_if_documentation, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
   append_before_action :set_attachable_options, :only => [:show]
 
   def load_pages_for_index
@@ -17,9 +17,9 @@ class WikiController
     page.editable_by?(User.current) && page.wiki_page?
   end
 
-  def render_403_if_documentation
-    if @page&.persisted? && controller_name != 'documentation' && @page.documentation_page?
-      return render_403
+  def redirect_if_documentation
+    if @page&.persisted? && @page.documentation_page? && controller_name != 'documentation'
+      redirect_to controller: 'documentation', action: action_name, project_id: @page.project, id: @page.title
     end
   end
 

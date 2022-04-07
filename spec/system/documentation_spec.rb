@@ -62,7 +62,7 @@ RSpec.describe "creating an issue", type: :system do
 
   end
 
-  it "allows to update a renamed page" do
+  it "allows to update the documentation root page" do
     visit '/projects/ecookbook/documentation'
     click_on 'Save'
 
@@ -77,13 +77,33 @@ content}
 
     expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
     expect(page).to have_selector("li", text: "Documentation")
+  end
 
-    visit '/projects/ecookbook/documentation/Documentation/rename'
+  it "allows to update a renamed page" do
+    visit '/projects/ecookbook/documentation'
+    click_on 'Save'
+
+    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
+
+    find("#content").find("span.icon-actions").click
+    find("a.icon-add").click
+    fill_in 'Title', :with => "New doc page"
+    click_on 'Next'
+
+    expect(page).to have_current_path('/projects/ecookbook/documentation/New_doc_page?parent=Documentation')
+    fill_in 'content[text]', :with => %{# Documentation
+
+content}
+    click_on 'Save'
+
+    visit '/projects/ecookbook/documentation/New_doc_page/rename'
     fill_in 'Title', :with => "New Title"
     click_on 'Rename'
 
     expect(page).to have_current_path('/projects/ecookbook/documentation/New_Title')
   end
+
+  pending 'does not allow to rename the documentation root page'
 
   it "forbids to see and edit a wiki without permissions" do
     visit '/projects/ecookbook/wiki'

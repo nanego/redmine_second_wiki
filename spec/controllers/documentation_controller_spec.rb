@@ -92,9 +92,9 @@ describe DocumentationController, type: :controller do
     ).to redirect_to('/projects/ecookbook/documentation/Documentation')
   end
 
-  it "forbids to see the standard wiki pages from documentation controller" do
+  it "redirects to wiki if the page is a standard wiki page" do
     get :show, :params => { :project_id => 1, :id => 'Another_page' } # Wiki page, not documentation
-    expect(response).to have_http_status(:forbidden) # 403
+    expect(response).to have_http_status(:redirect) # 302
   end
 
   it "shows the export link" do
