@@ -42,3 +42,38 @@ Deface::Override.new :virtual_path => "wiki/show",
                   :project_id => @project, :id => @page.title},
                  :multipart => true, :id => "add_attachment_form") do %>
 FORM_TAG
+Deface::Override.new :virtual_path  => "wiki/show",
+                     :name          => "add_link_collapse",
+                     :insert_before => "erb[loud]:contains(\"l(:button_delete)\")",
+                     :text          => <<EXPAND_COLLAPSE
+  <%= link_to l(:button_expand_all), "#", :onclick => "toggle_expand_collapse_all_wiki(this); return false;", :class => 'icon icon-collapsed collapsible' %>
+EXPAND_COLLAPSE
+Deface::Override.new :virtual_path  => "wiki/show",
+                     :name          => "add_function_toggle_collapse_expended",
+                     :insert_bottom => "div.contextual",
+                     :text          => <<SCRIPT_FUNCTION
+<script type="text/javascript"> 
+  function toggle_expand_collapse_all_wiki(ele){    
+    $(ele).toggleClass('icon-collapsed icon-expended')
+    let collapse = $('[id^=collapse].icon-collapsed.collapsible:visible');
+    if (collapse.length > 0) {
+      collapse.each(function( index ) {
+        $(this).click();
+      });
+      $(ele).text('<%= l(:button_collapse_all)%>');
+
+      return;
+    } 
+    
+    let expended = $('[id^=collapse].icon-expended.collapsible:visible'); 
+    if (expended.length > 0) {
+      expended.each(function( index ) {
+        $(this).click();
+      });
+      $(ele).text('<%= l(:button_expand_all)%>');
+      
+      return;
+    }
+  } 
+</script>
+SCRIPT_FUNCTION
