@@ -170,4 +170,47 @@ content}
     expect(page).to have_css("a[class='delete icon-only icon-del']")
 
   end
+
+  it "shows link collapse_all expand_all in action menu" do
+    manager_role = Role.find(1)
+    [:view_wiki_pages,
+     :view_wiki_edits,
+     :export_wiki_pages,
+     :edit_wiki_pages,
+     :rename_wiki_pages,
+     :delete_wiki_pages,
+     :delete_wiki_pages_attachments,
+     :protect_wiki_pages,
+     :manage_wiki].each do |permission|
+      manager_role.add_permission!(permission)
+    end
+
+    visit '/projects/ecookbook/wiki'
+
+    find("#content").find("a.icon-edit").click
+
+    expect(page).to have_current_path('/projects/ecookbook/wiki/CookBook_documentation/edit')
+    fill_in 'content[text]', :with =>  "{{collapse(View details...)
+This is a block of text that is collapsed by default.
+It can be expanded by clicking a link.
+}}{{collapse(View details...)
+This is a block of text that is collapsed by default.
+It can be expanded by clicking a link.
+}}"
+    click_on 'Save'
+
+    expect(page).to have_current_path('/projects/ecookbook/wiki/CookBook_documentation')
+    expect(page).to have_css(".icon-actions")
+    find(".icon-actions").click
+    
+    expect(page).to have_css(".icon-collapsed", :text => "Expand all")
+    expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => false)
+    expect(page).to have_css("[id^=collapse].icon-collapsed.collapsible", :visible => true)
+
+    find(".icon-collapsed", :text => "Expand all").click
+    
+    expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => true)
+    expect(page).to have_css("[id^=collapse].icon-collapsed.collapsible", :visible => false)
+
+  end
 end
