@@ -243,4 +243,61 @@ describe DocumentationController, type: :controller do
 
   end
 
+  it "creates new standard WIKI page with attachments" do
+
+    [:view_documentation_pages,
+     :view_documentation_edits,
+     :export_documentation_pages,
+     :edit_documentation_pages,
+     :rename_documentation_pages,
+     :delete_documentation_pages,
+     :delete_documentation_pages_attachments,
+     :protect_documentation_pages,
+     :manage_documentation].each do |permission|
+      manager_role.remove_permission!(permission)
+    end
+
+    [:view_wiki_pages,
+     :view_wiki_edits,
+     :export_wiki_pages,
+     :edit_wiki_pages,
+     :rename_wiki_pages,
+     :delete_wiki_pages,
+     :delete_wiki_pages_attachments,
+     :protect_wiki_pages,
+     :manage_wiki].each do |permission|
+      manager_role.add_permission!(permission)
+    end
+
+    @controller = WikiController.new
+    assert_difference 'WikiPage.count' do
+      assert_difference 'Attachment.count' do
+        put :update, :params => {
+          :project_id => 1,
+          :id => 'New wiki page',
+          :parent_id => 1, # WIKI root page CookBook_documentation
+          :content => {
+            :comments => 'Created the page',
+            :text => "h1. New wiki page\n\nThis is a new page",
+            :version => 0
+          },
+          :attachments => { '1' => { 'file' => uploaded_test_file('testfile.txt', 'text/plain') } }
+        }
+      end
+    end
+    page = Wiki.find(1).find_page('New wiki page')
+    assert_equal 1, page.attachments.count
+    assert_equal 'testfile.txt', page.attachments.first.filename
+    expect(page.wiki_page?).to be_truthy
+
+    # Attachment should be readable
+    @controller = AttachmentsController.new
+    get :show, :params => { :id => page.attachments.first.id }
+    expect(page.class.attachable_options[:view_permission]).to eq "view_wiki_pages".to_sym
+    expect(page.class.attachable_options[:edit_permission]).to eq "edit_wiki_pages".to_sym
+    expect(page.class.attachable_options[:delete_permission]).to eq "delete_wiki_pages_attachments".to_sym
+    expect(response).to be_successful
+
+  end
+
 end
