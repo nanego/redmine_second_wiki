@@ -12,6 +12,10 @@ class AttachmentsController
         container.class.attachable_options[:view_permission] = "view_documentation_pages".to_sym
         container.class.attachable_options[:edit_permission] = "edit_documentation_pages".to_sym
         container.class.attachable_options[:delete_permission] = "edit_documentation_pages".to_sym
+      else
+        container.class.attachable_options[:view_permission] = "view_wiki_pages".to_sym
+        container.class.attachable_options[:edit_permission] = "edit_wiki_pages".to_sym
+        container.class.attachable_options[:delete_permission] = "delete_wiki_pages_attachments".to_sym
       end
     end
   rescue ActiveRecord::RecordNotFound
