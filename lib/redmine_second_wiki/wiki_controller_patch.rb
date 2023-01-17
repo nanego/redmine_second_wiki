@@ -3,7 +3,7 @@ require_dependency 'wiki_controller'
 class WikiController
 
   append_before_action :redirect_if_documentation, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
-  append_before_action :set_attachable_options, :only => [:show]
+  append_before_action :set_attachable_options
 
   def load_pages_for_index
     @pages = @wiki.pages.with_updated_on.
@@ -24,9 +24,17 @@ class WikiController
   end
 
   def set_attachable_options
-    @page.class.attachable_options[:view_permission] = "view_#{controller_name}_pages".to_sym
-    @page.class.attachable_options[:edit_permission] = "edit_#{controller_name}_pages".to_sym
-    @page.class.attachable_options[:delete_permission] = "edit_#{controller_name}_pages".to_sym
+    if @page
+      if @page.documentation_page?
+        @page.class.attachable_options[:view_permission] = "view_documentation_pages".to_sym
+        @page.class.attachable_options[:edit_permission] = "edit_documentation_pages".to_sym
+        @page.class.attachable_options[:delete_permission] = "edit_documentation_pages".to_sym
+      else
+        @page.class.attachable_options[:view_permission] = "view_wiki_pages".to_sym
+        @page.class.attachable_options[:edit_permission] = "edit_wiki_pages".to_sym
+        @page.class.attachable_options[:delete_permission] = "edit_wiki_pages".to_sym
+      end
+    end
   end
 
 end

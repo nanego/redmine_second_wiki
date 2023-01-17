@@ -42,7 +42,7 @@ describe DocumentationController, type: :controller do
   let!(:manager_role) { Role.find(1) }
 
   before do
-    User.current = User.find(2) #jsmith
+    User.current = User.find(2) # jsmith
     @request.session[:user_id] = 2
     Setting.default_language = 'en'
 
@@ -88,7 +88,7 @@ describe DocumentationController, type: :controller do
 
   it 'redirects documentation root page to url with page ID' do
     expect(
-      get :show, params: { project_id: 'ecookbook'}
+      get :show, params: { project_id: 'ecookbook' }
     ).to redirect_to('/projects/ecookbook/documentation/Documentation')
   end
 
@@ -232,6 +232,15 @@ describe DocumentationController, type: :controller do
     assert_equal 1, page.attachments.count
     assert_equal 'testfile.txt', page.attachments.first.filename
     expect(page.documentation_page?).to be_truthy
+
+    # Attachment should be readable
+    @controller = AttachmentsController.new
+    get :show, :params => { :id => page.attachments.first.id }
+    expect(page.class.attachable_options[:view_permission]).to eq "view_documentation_pages".to_sym
+    expect(page.class.attachable_options[:edit_permission]).to eq "edit_documentation_pages".to_sym
+    expect(page.class.attachable_options[:delete_permission]).to eq "edit_documentation_pages".to_sym
+    expect(response).to be_successful
+
   end
 
 end
