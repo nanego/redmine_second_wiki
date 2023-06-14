@@ -203,14 +203,14 @@ It can be expanded by clicking a link.
     expect(page).to have_css(".icon-actions")
     find(".icon-actions").click
     
-    expect(page).to have_css(".icon-collapsed", :text => "Expand all")
+    expect(page).to have_css(".icon-wiki-collapsed", :text => "Expand all")
     expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => false)
     expect(page).to have_css("[id^=collapse].icon-collapsed.collapsible", :visible => true)
 
-    find(".icon-collapsed", :text => "Expand all").click
+    find(".icon-wiki-collapsed", :text => "Expand all").click
     
-    expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => true)
-    expect(page).to have_css("[id^=collapse].icon-collapsed.collapsible", :visible => false)
+    expect(page).to have_css("[id^=collapse].icon-wiki-expended.collapsible", :visible => true)
+    expect(page).to have_css("[id^=collapse].icon-wiki-collapsed.collapsible", :visible => false)
 
   end
 end
