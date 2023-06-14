@@ -1,3 +1,5 @@
+require 'redmine_second_wiki/hooks'
+
 Rails.application.config.to_prepare do
   require_dependency 'redmine_second_wiki/wiki_helper_patch'
   require_dependency 'redmine_second_wiki/application_helper_patch'
