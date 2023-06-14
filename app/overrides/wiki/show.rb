@@ -46,7 +46,7 @@ Deface::Override.new :virtual_path  => "wiki/show",
                      :name          => "add_link_collapse",
                      :insert_before => "erb[loud]:contains(\"l(:button_delete)\")",
                      :text          => <<EXPAND_COLLAPSE
-  <%= link_to l(:button_expand_all), "#", :onclick => "toggle_expand_collapse_all_wiki(this); return false;", :class => 'icon icon-collapsed collapsible' %>
+  <%= link_to l(:button_expand_all), "#", :onclick => "toggle_expand_collapse_all_wiki(this); return false;", :class => 'icon icon-wiki-collapsed collapsible' %>
 EXPAND_COLLAPSE
 Deface::Override.new :virtual_path  => "wiki/show",
                      :name          => "add_function_toggle_collapse_expended",
@@ -54,7 +54,7 @@ Deface::Override.new :virtual_path  => "wiki/show",
                      :text          => <<SCRIPT_FUNCTION
 <script type="text/javascript"> 
   function toggle_expand_collapse_all_wiki(ele){    
-    $(ele).toggleClass('icon-collapsed icon-expended')
+    $(ele).toggleClass('icon-wiki-collapsed icon-wiki-expended')
     let collapse = $('[id^=collapse].icon-collapsed.collapsible:visible');
     if (collapse.length > 0) {
       collapse.each(function( index ) {
