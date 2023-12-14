@@ -75,8 +75,16 @@ describe DocumentationController, type: :controller do
   end
 
   it "shows document start page" do
+
+    puts "documentation: #{documentation.inspect}"
+    puts "documentation_page_1: #{documentation_page_1.inspect}"
+
     get :show, params: { project_id: 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
+
+    puts request.path
+
+
     assert_select 'h1', :text => /First documentation page/
 
     # Ensure we don't have access without the right permission

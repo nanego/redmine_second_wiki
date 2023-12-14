@@ -128,7 +128,7 @@ content}
     click_on 'Save'
 
     expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
-    Attachment.find(10).update_attributes(:container => WikiPage.last)
+    Attachment.find(10).update_attribute(:container, WikiPage.last)
 
     visit '/projects/ecookbook/documentation/Documentation'
 
@@ -171,7 +171,7 @@ content}
 
   end
 
-  it "shows link collapse_all expand_all in action menu" do
+  it "shows a link collapse_all/expand_all in action menu" do
     manager_role = Role.find(1)
     [:view_wiki_pages,
      :view_wiki_edits,
@@ -190,10 +190,11 @@ content}
     find("#content").find("a.icon-edit").click
 
     expect(page).to have_current_path('/projects/ecookbook/wiki/CookBook_documentation/edit')
-    fill_in 'content[text]', :with =>  "{{collapse(View details...)
+    fill_in 'content[text]', :with => "{{collapse(View details...)
 This is a block of text that is collapsed by default.
 It can be expanded by clicking a link.
-}}{{collapse(View details...)
+}}
+{{collapse(View details...)
 This is a block of text that is collapsed by default.
 It can be expanded by clicking a link.
 }}"
@@ -202,14 +203,22 @@ It can be expanded by clicking a link.
     expect(page).to have_current_path('/projects/ecookbook/wiki/CookBook_documentation')
     expect(page).to have_css(".icon-actions")
     find(".icon-actions").click
-    
+
     expect(page).to have_css(".icon-wiki-collapsed", :text => "Expand all")
-    expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => false)
+    if Redmine::VERSION::MAJOR >= 5
+      expect(page).to have_css("[id^=collapse].icon-expanded.collapsible", :visible => false)
+    else
+      expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => false)
+    end
     expect(page).to have_css("[id^=collapse].icon-collapsed.collapsible", :visible => true)
 
     find(".icon-wiki-collapsed", :text => "Expand all").click
-    
-    expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => true)
+
+    if Redmine::VERSION::MAJOR >= 5
+      expect(page).to have_css("[id^=collapse].icon-expanded.collapsible", :visible => true)
+    else
+      expect(page).to have_css("[id^=collapse].icon-expended.collapsible", :visible => true)
+    end
     expect(page).to have_css("[id^=collapse].icon-collapsed.collapsible", :visible => false)
 
   end

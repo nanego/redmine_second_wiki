@@ -1,6 +1,14 @@
-require_dependency 'wiki'
+require 'wiki'
+
+module RedmineSecondWiki
+  module WikiPatch
+
+  end
+end
 
 class Wiki < ActiveRecord::Base
+
+  prepend RedmineSecondWiki::WikiPatch
 
   def documentation_pages
     root_page = root_documentation_page
@@ -18,5 +26,4 @@ class Wiki < ActiveRecord::Base
   def root_wiki_page
     find_page(start_page)
   end
-
 end

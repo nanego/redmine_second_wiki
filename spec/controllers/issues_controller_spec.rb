@@ -56,7 +56,11 @@ describe IssuesController, type: :controller do
     expect(response).to redirect_to(:controller => 'issues', :action => 'show', :id => Issue.last.id)
 
     default_mail = ActionMailer::Base.deliveries.first
-    expect(default_mail['bcc'].value).to include User.find(2).mail
+    if Redmine::VERSION::MAJOR >= 5
+      expect(default_mail['to'].value).to include User.find(2).mail
+    else
+      expect(default_mail['bcc'].value).to include User.find(2).mail
+    end
     html_mail = default_mail.parts[1]
     expect(html_mail.body.raw_source).to include '<a class="wiki-page"'
     expect(html_mail.body.raw_source).to include '/projects/onlinestore/wiki/Start_page'

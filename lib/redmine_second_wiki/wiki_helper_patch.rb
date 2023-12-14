@@ -1,7 +1,5 @@
-require_dependency 'wiki_helper'
-
-module PluginRedmineSecondWiki
-  module WikiHelper
+module RedmineSecondWiki
+  module WikiHelperPatch
 
     def wiki_page_breadcrumb(page)
       breadcrumb(page.ancestors.reverse.collect { |parent|
@@ -32,5 +30,5 @@ module PluginRedmineSecondWiki
   end
 end
 
-WikiHelper.prepend PluginRedmineSecondWiki::WikiHelper
+WikiHelper.prepend RedmineSecondWiki::WikiHelperPatch
 ActionView::Base.send(:include, WikiHelper)

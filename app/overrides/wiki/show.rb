@@ -42,12 +42,14 @@ Deface::Override.new :virtual_path => "wiki/show",
                   :project_id => @project, :id => @page.title},
                  :multipart => true, :id => "add_attachment_form") do %>
 FORM_TAG
+
 Deface::Override.new :virtual_path  => "wiki/show",
                      :name          => "add_link_collapse",
                      :insert_before => "erb[loud]:contains(\"l(:button_delete)\")",
                      :text          => <<EXPAND_COLLAPSE
   <%= link_to l(:button_expand_all), "#", :onclick => "toggle_expand_collapse_all_wiki(this); return false;", :class => 'icon icon-wiki-collapsed collapsible' %>
 EXPAND_COLLAPSE
+
 Deface::Override.new :virtual_path  => "wiki/show",
                      :name          => "add_function_toggle_collapse_expended",
                      :insert_bottom => "div.contextual",
@@ -65,7 +67,10 @@ Deface::Override.new :virtual_path  => "wiki/show",
       return;
     } 
     
-    let expended = $('[id^=collapse].icon-expended.collapsible:visible'); 
+    let expended = $('[id^=collapse].icon-expanded.collapsible:visible'); 
+    if (expended == undefined) {
+      let expended = $('[id^=collapse].icon-expended.collapsible:visible'); // Redmine 4 compatibility: icon-expended was renamed to icon-expanded in Redmine 5
+    }
     if (expended.length > 0) {
       expended.each(function( index ) {
         $(this).click();

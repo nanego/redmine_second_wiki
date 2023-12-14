@@ -1,14 +1,4 @@
-require 'redmine_second_wiki/hooks'
-
-Rails.application.config.to_prepare do
-  require_dependency 'redmine_second_wiki/wiki_helper_patch'
-  require_dependency 'redmine_second_wiki/application_helper_patch'
-  require_dependency 'redmine_second_wiki/project_patch'
-  require_dependency 'redmine_second_wiki/wiki_patch'
-  require_dependency 'redmine_second_wiki/wiki_page_patch'
-  require_dependency 'redmine_second_wiki/wiki_controller_patch'
-  require_dependency 'redmine_second_wiki/attachments_controller_patch'
-end
+require_relative 'lib/redmine_second_wiki/hooks'
 
 Redmine::Plugin.register :redmine_second_wiki do
 

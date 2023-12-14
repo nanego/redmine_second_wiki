@@ -1,6 +1,14 @@
-require_dependency 'wiki_controller'
+require 'wiki_controller'
+
+module RedmineSecondWiki
+  module WikiControllerPatch
+
+  end
+end
 
 class WikiController
+
+  prepend RedmineSecondWiki::WikiControllerPatch
 
   append_before_action :redirect_if_documentation, :only => [:show, :protect, :history, :diff, :annotate, :export, :add_attachment]
   append_before_action :set_attachable_options
