@@ -77,7 +77,10 @@ describe DocumentationController, type: :controller do
   it "shows document start page" do
     get :show, params: { project_id: 'ecookbook', id: 'Documentation' }
     expect(response).to be_successful
-    assert_select 'p', :text => /h1. First documentation page/
+
+    puts response.body
+
+    assert_select '.wiki-page', :text => /First documentation page/
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :view_documentation_pages
@@ -126,7 +129,7 @@ describe DocumentationController, type: :controller do
   it "shows document page with name" do
     get :show, :params => { :project_id => 'ecookbook', :id => "Another Documentation Page" }
     expect(response).to be_successful
-    assert_select 'p', :text => /h1. Another documentation page/
+    assert_select '.wiki-page', :text => /Another documentation page/
 
     # Ensure we don't have access without the right permission
     manager_role.remove_permission! :view_documentation_pages
