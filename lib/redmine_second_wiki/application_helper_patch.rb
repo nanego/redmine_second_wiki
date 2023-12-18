@@ -72,7 +72,7 @@ module RedmineSecondWiki
             wiki_page = link_project.wiki.find_page(page)
             url =
               if anchor.present? && wiki_page.present? &&
-                (obj.is_a?(WikiContent) || obj.is_a?(WikiContent::Version)) &&
+                (obj.is_a?(WikiContent) || obj.is_a?(WikiContentVersion)) &&
                 obj.page == wiki_page
                 "##{anchor}"
               else
@@ -84,7 +84,13 @@ module RedmineSecondWiki
                   "##{page.present? ? Wiki.titleize(page) : title}" + (anchor.present? ? "_#{anchor}" : '')
                 else
                   wiki_page_id = page.present? ? Wiki.titleize(page) : nil
-                  parent = wiki_page.nil? && obj.is_a?(WikiContent) && obj.page && project == link_project ? obj.page.title : nil
+                  parent =
+                    if wiki_page.nil? && obj.is_a?(WikiContent) &&
+                      obj.page && project == link_project
+                      obj.page.title
+                    else
+                      nil
+                    end
 
                   ############
                   # START PATCH
@@ -104,7 +110,8 @@ module RedmineSecondWiki
 
                 end
               end
-            link_to(title.present? ? title.html_safe : h(page), url, :class => ('wiki-page' + (wiki_page ? '' : ' new')))
+            link_to(title.present? ? title.html_safe : h(page),
+                    url, :class => ('wiki-page' + (wiki_page ? '' : ' new')))
           else
             # project or wiki doesn't exist
             all
