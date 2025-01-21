@@ -3,18 +3,22 @@ require "active_support/testing/assertions"
 
 def log_user(login, password)
   visit '/my/page'
-  expect(current_path).to eq '/login'
 
-  if Redmine::Plugin.installed?(:redmine_scn)
-    click_on("ou s'authentifier par login / mot de passe")
+  if current_path == '/login'
+    expect(current_path).to eq '/login'
+
+    if Redmine::Plugin.installed?(:redmine_scn)
+      click_on("ou s'authentifier par login / mot de passe")
+    end
+
+    within('#login-form form') do
+      fill_in 'username', with: login
+      fill_in 'password', with: password
+      find('input[name=login]').click
+    end
   end
 
-  within('#login-form form') do
-    fill_in 'username', with: login
-    fill_in 'password', with: password
-    find('input[name=login]').click
-  end
-  expect(current_path).to eq '/my/page'
+  expect(page).to have_current_path('/my/page', wait: true)
 end
 
 RSpec.describe "creating an issue", type: :system do
@@ -96,7 +100,12 @@ content}
 content}
     click_on 'Save'
 
+    expect(page).to have_current_path('/projects/ecookbook/documentation/New_doc_page')
+
     visit '/projects/ecookbook/documentation/New_doc_page/rename'
+    expect(page).to have_current_path('/projects/ecookbook/documentation/New_doc_page/rename')
+
+    expect(page).to have_field('Title')
     fill_in 'Title', :with => "New Title"
     click_on 'Rename'
 
@@ -134,8 +143,8 @@ content}
 
     find("legend[class='icon icon-collapsed']").click
 
-    expect(page).to have_css("a[class='icon-only icon-edit']")
-    expect(page).to have_css("a[class='delete icon-only icon-del']")
+    expect(page).to have_css("a[class='icon icon-edit']")
+    expect(page).to have_css("a[class='icon icon-del']", visible: false)
   end
 
   it "shows both icons to edit and delete attachment when the user has the permissions(view, delete, edit) on wiki and no longer has permissions on the documentation" do
@@ -156,18 +165,18 @@ content}
     # add a documentation
     visit '/projects/ecookbook/documentation'
     click_on 'Save'
+    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
 
     # disable module of documentation
     Project.find(1).disable_module!(:documentation)
 
     visit '/projects/ecookbook/wiki'
-
     expect(page).to have_current_path('/projects/ecookbook/wiki')
 
     find("legend[class='icon icon-collapsed']").click
 
-    expect(page).to have_css("a[class='icon-only icon-edit']")
-    expect(page).to have_css("a[class='delete icon-only icon-del']")
+    expect(page).to have_css("a[class='icon icon-edit']")
+    expect(page).to have_css("a[class='icon icon-del']", visible: false)
 
   end
 

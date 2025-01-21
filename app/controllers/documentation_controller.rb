@@ -6,7 +6,6 @@ class DocumentationController < WikiController
 
   # display a page (in editing mode if it doesn't exist)
   def show
-
     # DRAWIO Plugin compatibility: documentation ID is required
     if params[:id].blank? && @page == @wiki.root_documentation_page
       redirect_to_page(@page)

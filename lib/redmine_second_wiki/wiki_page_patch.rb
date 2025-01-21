@@ -66,7 +66,7 @@ module RedmineSecondWiki
   end
 end
 
-class WikiPage < ActiveRecord::Base
+class WikiPage
   prepend RedmineSecondWiki::WikiPagePatch
 
   safe_attributes 'parent_id', 'parent_title', 'title', 'redirect_existing_links', 'wiki_id',

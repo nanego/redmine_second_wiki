@@ -11,7 +11,9 @@ describe DocumentationController, type: :controller do
   fixtures :projects, :users, :email_addresses, :roles, :members, :member_roles,
            :enabled_modules, :wikis, :wiki_pages, :wiki_contents,
            :wiki_content_versions, :attachments,
-           :issues, :issue_statuses, :trackers
+           :issues, :issue_statuses, :trackers,
+           :user_preferences, :journals, :journal_details,
+           :versions, :documents, :enumerations
 
   let!(:documentation) { Documentation.find_by(project: Project.find(1)) }
   let!(:project) { Project.find_by_identifier("ecookbook") }
@@ -42,8 +44,12 @@ describe DocumentationController, type: :controller do
   let!(:manager_role) { Role.find(1) }
 
   before do
+    @request = ActionDispatch::TestRequest.create
+    @response = ActionDispatch::TestResponse.new
     User.current = User.find(2) # jsmith
-    @request.session[:user_id] = 2
+    @request.session = ActionController::TestSession.new
+    @request.session[:user_id] = 2 # admin
+
     Setting.default_language = 'en'
 
     documentation.update_attribute(:documentation_start_page, "Documentation")
@@ -235,12 +241,18 @@ describe DocumentationController, type: :controller do
 
     # Attachment should be readable
     @controller = AttachmentsController.new
-    get :show, :params => { :id => page.attachments.first.id }
+    @request = ActionDispatch::TestRequest.create
+    @request.session = ActionController::TestSession.new
+    @request.session[:user_id] = 2 # admin
+
+    attachment = page.attachments.first
+    expect(attachment).not_to be_nil
+    get :show, :params => { :id => attachment.id }
+
     expect(page.class.attachable_options[:view_permission]).to eq "view_documentation_pages".to_sym
     expect(page.class.attachable_options[:edit_permission]).to eq "edit_documentation_pages".to_sym
     expect(page.class.attachable_options[:delete_permission]).to eq "edit_documentation_pages".to_sym
     expect(response).to be_successful
-
   end
 
   it "creates new standard WIKI page with attachments" do
@@ -292,6 +304,10 @@ describe DocumentationController, type: :controller do
 
     # Attachment should be readable
     @controller = AttachmentsController.new
+    @request = ActionDispatch::TestRequest.create
+    @request.session = ActionController::TestSession.new
+    @request.session[:user_id] = 2 # admin
+
     get :show, :params => { :id => page.attachments.first.id }
     expect(page.class.attachable_options[:view_permission]).to eq "view_wiki_pages".to_sym
     expect(page.class.attachable_options[:edit_permission]).to eq "edit_wiki_pages".to_sym

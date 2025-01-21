@@ -6,7 +6,7 @@ module RedmineSecondWiki
   end
 end
 
-class Wiki < ActiveRecord::Base
+class Wiki
 
   prepend RedmineSecondWiki::WikiPatch
 
