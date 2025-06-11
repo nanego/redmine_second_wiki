@@ -27,7 +27,7 @@ Deface::Override.new :virtual_path => "wiki/show",
 
 Deface::Override.new :virtual_path => "wiki/show",
                      :name => "adapt-link-to-diff",
-                     :replace => "erb[loud]:contains('link_to l(:label_diff)')",
+                     :replace => "erb[loud]:contains('l(:label_diff)')",
                      :text => <<EOS
 <%= link_to l(:label_diff), :action => 'diff',
   :id => @page.title, :project_id => @page.project,

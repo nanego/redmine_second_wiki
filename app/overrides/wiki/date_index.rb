@@ -7,12 +7,12 @@ EOS
 
 Deface::Override.new :virtual_path => "wiki/date_index",
                      :name         => "replace-url-for-new-wiki-link-in-date-index",
-                     :replace      => "erb[loud]:contains('link_to l(:label_wiki_page_new)')",
+                     :replace      => "erb[loud]:contains('l(:label_wiki_page_new)')",
                      :text         => <<LINK
 <% if controller.controller_name == 'documentation' %>
-  <%= link_to l(:label_wiki_page_new), new_project_documentation_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_documentation_page_path(@project), :remote => true, :class => 'icon icon-add' %>
 <% else %>
-  <%= link_to l(:label_wiki_page_new), new_project_wiki_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_wiki_page_path(@project), :remote => true, :class => 'icon icon-add' %>
 <% end %>
 LINK
 
@@ -25,12 +25,12 @@ EOS
 
 Deface::Override.new :virtual_path => "wiki/date_index",
                      :name         => "replace-url-for-delete-wiki-link-in-date-index",
-                     :replace      => "erb[loud]:contains('link_to l(:button_delete)')",
+                     :replace      => "erb[loud]:contains('l(:button_delete)')",
                      :text         => <<LINK
 <% if controller.controller_name == 'documentation' %>
   <%# Documentation deletion is disabled %>
 <% else %>
-  <%= link_to l(:button_delete), {:controller => 'wikis', :action => 'destroy', :id => @project}, :class => 'icon icon-del' %>
+  <%= link_to sprite_icon('del', l(:button_delete)), { :controller => 'wikis', :action => 'destroy', :id => @project}, :class => 'icon icon-del' %>
 <% end %>
 LINK
 
