@@ -70,17 +70,17 @@ RSpec.describe "creating an issue", type: :system do
     visit '/projects/ecookbook/documentation'
     click_on 'Save'
 
-    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
+    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation', wait: true)
 
     find("#content").find("a.icon-edit").click
-    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation/edit')
+    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation/edit', wait: true)
     fill_in 'content[text]', :with => %{# Documentation
 
 content}
     click_on 'Save'
 
-    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation')
-    expect(page).to have_selector("li", text: "Documentation")
+    expect(page).to have_current_path('/projects/ecookbook/documentation/Documentation', wait: true)
+    expect(page).to have_selector("li", text: "Documentation", wait: true)
   end
 
   it "allows to update a renamed page" do
