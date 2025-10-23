@@ -277,6 +277,115 @@ describe DocumentationController, type: :controller do
     expect(page.content.text).to include('content')
   end
 
+  it "creates and renames a documentation page" do
+    assert_difference 'WikiPage.count' do
+      put :update, params: {
+        project_id: 'ecookbook',
+        id: 'New_doc_page',
+        parent_id: documentation_page_1.id,
+        content: {
+          text: "# Documentation\n\ncontent",
+          comments: 'Created new doc page'
+        }
+      }
+    end
+
+    expect(response).to redirect_to('/projects/ecookbook/documentation/New_doc_page')
+    page = documentation.find_page('New doc page')
+    expect(page).not_to be_nil
+    expect(page.parent).to eq(documentation_page_1)
+
+    post :rename, params: {
+      project_id: 'ecookbook',
+      id: 'New_doc_page',
+      wiki_page: {
+        title: 'New Title',
+        redirect_existing_links: 1
+      }
+    }
+
+    expect(response).to redirect_to('/projects/ecookbook/documentation/New_Title')
+    renamed_page = documentation.find_page('New Title')
+    expect(renamed_page).not_to be_nil
+    expect(documentation.find_page('New doc page')).not_to be_nil
+  end
+
+  it "forbids access to wiki pages without documentation permissions" do
+    @controller = WikiController.new
+    get :show, params: { project_id: 'ecookbook', id: 'Another_page' }
+    expect(response).to have_http_status(:forbidden)
+
+    get :edit, params: { project_id: 'ecookbook', id: 'Another_page' }
+    expect(response).to have_http_status(:forbidden)
+
+    @controller = DocumentationController.new
+    get :show, params: { project_id: 'ecookbook', id: 'Another_page' }
+    expect(response).to have_http_status(:redirect)
+
+    get :show, params: { project_id: 'ecookbook', id: 'New_page_not_persisted' }
+    expect(response).to be_successful
+    expect(response.body).to include('New page not persisted')
+  end
+
+  it "shows edit and delete icons for attachments with documentation permissions" do
+    attachment = Attachment.find(10)
+    attachment.update_attribute(:container, documentation_page_1)
+
+    get :show, params: { project_id: 'ecookbook', id: 'Documentation' }
+    expect(response).to be_successful
+    assert_select 'a.icon-edit'
+    assert_select 'a.icon-del'
+  end
+
+  it "shows wiki attachments icons when documentation module is disabled" do
+    manager_role.remove_permission! :view_documentation_pages
+    [:view_wiki_pages, :edit_wiki_pages].each do |perm|
+      manager_role.add_permission!(perm)
+    end
+
+    project.disable_module!(:documentation)
+
+    @controller = WikiController.new
+    get :show, params: { project_id: 'ecookbook' }
+    expect(response).to be_successful
+    assert_select '.wiki-page'
+  end
+
+  it "allows creating wiki page with collapse macros" do
+    manager_role.add_permission! :view_wiki_pages
+    manager_role.add_permission! :edit_wiki_pages
+
+    @controller = WikiController.new
+    @request = ActionDispatch::TestRequest.create
+    @response = ActionDispatch::TestResponse.new
+    @request.session = ActionController::TestSession.new
+    @request.session[:user_id] = 2
+
+    collapse_text = "{{collapse(View details...)\nThis is a block of text that is collapsed by default.\n}}"
+
+    assert_difference 'WikiPage.count' do
+      put :update, params: {
+        project_id: 'ecookbook',
+        id: 'Page_with_collapse',
+        content: {
+          text: collapse_text,
+          comments: 'Created page with collapse macros'
+        }
+      }
+    end
+
+    expect(response).to redirect_to('/projects/ecookbook/wiki/Page_with_collapse')
+
+    wiki = Wiki.find(1)
+    wiki_page = wiki.find_page('Page with collapse')
+    expect(wiki_page).not_to be_nil
+    expect(wiki_page.content.text).to include('collapse')
+    expect(wiki_page.wiki_page?).to be_truthy
+
+    get :show, params: { project_id: 'ecookbook', id: 'Page_with_collapse' }
+    expect(response).to be_successful
+  end
+
   it "creates new standard WIKI page with attachments" do
 
     [:view_documentation_pages,
