@@ -255,6 +255,28 @@ describe DocumentationController, type: :controller do
     expect(response).to be_successful
   end
 
+  it "updates the documentation root page" do
+    get :show, params: { project_id: 'ecookbook' }
+    expect(response).to redirect_to('/projects/ecookbook/documentation/Documentation')
+
+    get :edit, params: { project_id: 'ecookbook', id: 'Documentation' }
+    expect(response).to be_successful
+
+    put :update, params: {
+      project_id: 'ecookbook',
+      id: 'Documentation',
+      content: {
+        text: "# Documentation\n\ncontent",
+        comments: 'Updated documentation root page'
+      }
+    }
+    expect(response).to redirect_to('/projects/ecookbook/documentation/Documentation')
+
+    page = documentation.find_page('Documentation')
+    expect(page.content.text).to include('# Documentation')
+    expect(page.content.text).to include('content')
+  end
+
   it "creates new standard WIKI page with attachments" do
 
     [:view_documentation_pages,
