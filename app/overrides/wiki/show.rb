@@ -5,17 +5,15 @@ Deface::Override.new :virtual_path => "wiki/show",
                      :text => <<LINK
 <% if controller.controller_name == 'documentation' %>
   <% if User.current.allowed_to?(:edit_documentation_pages, @project) %>
-    <%= link_to l(:label_documentation_page_new), 
-      new_project_documentation_page_path(@project, :parent => @page.title), 
-      remote: true,
-      class: 'icon icon-add' %>
+    <%= link_to sprite_icon('add', l(:label_documentation_page_new)),
+      new_project_documentation_page_path(@project, :parent => @page.title),
+      remote: true %>
   <% end %>
 <% else %>
   <% if User.current.allowed_to?(:edit_wiki_pages, @project) %>
-    <%= link_to l(:label_wiki_page_new), 
-      new_project_wiki_page_path(@project, :parent => @page.title), 
-      remote: true,
-      class: 'icon icon-add' %>
+    <%= link_to sprite_icon('add', l(:label_wiki_page_new)),
+      new_project_wiki_page_path(@project, :parent => @page.title),
+      remote: true %>
   <% end %>
 <% end %>
 LINK

@@ -10,9 +10,9 @@ Deface::Override.new :virtual_path => "wiki/date_index",
                      :replace      => "erb[loud]:contains('l(:label_wiki_page_new)')",
                      :text         => <<LINK
 <% if controller.controller_name == 'documentation' %>
-  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_documentation_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_documentation_page_path(@project), :remote => true %>
 <% else %>
-  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_wiki_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_wiki_page_path(@project), :remote => true %>
 <% end %>
 LINK
 
@@ -30,7 +30,7 @@ Deface::Override.new :virtual_path => "wiki/date_index",
 <% if controller.controller_name == 'documentation' %>
   <%# Documentation deletion is disabled %>
 <% else %>
-  <%= link_to sprite_icon('del', l(:button_delete)), { :controller => 'wikis', :action => 'destroy', :id => @project}, :class => 'icon icon-del' %>
+  <%= link_to sprite_icon('del', l(:button_delete)), { :controller => 'wikis', :action => 'destroy', :id => @project} %>
 <% end %>
 LINK
 

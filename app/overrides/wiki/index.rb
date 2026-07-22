@@ -11,12 +11,12 @@ Deface::Override.new :virtual_path => "wiki/index",
                      :text         => <<LINK
 <% if controller.controller_name == 'documentation' %>
   <% if @pages.empty? %>
-    <%= link_to l(:label_documentation_page_new), project_documentation_page_path(@project, 'Documentation'), :class => 'icon icon-add' %>
+    <%= link_to sprite_icon('add', l(:label_documentation_page_new)), project_documentation_page_path(@project, 'Documentation') %>
   <% else %>
-    <%= link_to l(:label_documentation_page_new), new_project_documentation_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+    <%= link_to sprite_icon('add', l(:label_documentation_page_new)), new_project_documentation_page_path(@project), :remote => true %>
   <% end %>
 <% else %>
-  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_wiki_page_path(@project), :remote => true, :class => 'icon icon-add' %>
+  <%= link_to sprite_icon('add', l(:label_wiki_page_new)), new_project_wiki_page_path(@project), :remote => true %>
 <% end %>
 LINK
 
@@ -34,7 +34,7 @@ Deface::Override.new :virtual_path => "wiki/index",
 <% if controller.controller_name == 'documentation' %>
   <%# Documentation deletion is disabled %>
 <% else %>
-  <%= link_to l(:button_delete), {:controller => 'wikis', :action => 'destroy', :id => @project}, :class => 'icon icon-del' %>
+  <%= link_to sprite_icon('del', l(:button_delete)), {:controller => 'wikis', :action => 'destroy', :id => @project} %>
 <% end %>
 LINK
 
