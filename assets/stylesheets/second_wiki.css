@@ -1,15 +1,15 @@
-/* Base positioning for the plugin's own raster expand/collapse icons.
-   Redmine 7.0 dropped this rule from core; scoped to elements without an SVG icon. */
-.icon:not(:has(svg)) {
+.icon-wiki-expended, .icon-wiki-collapsed {
   background-position: 0% 50%;
   background-repeat: no-repeat;
+  background-size: 16px 16px;
   padding-left: 20px;
 }
 
-.icon-wiki-expended { background-image: url(../images/wiki-expended.svg); background-size: 16px 16px; }
-.icon-wiki-collapsed { background-image: url(../images/wiki-collapsed.svg); background-size: 16px 16px; }
+.icon-wiki-expended { background-image: url(../images/wiki-expended.svg); }
+.icon-wiki-collapsed { background-image: url(../images/wiki-collapsed.svg); }
 
-.contextual .drdn-items > a.icon:not(:has(svg)) {
+.contextual .drdn-items > a.icon-wiki-expended,
+.contextual .drdn-items > a.icon-wiki-collapsed {
   padding-left: 30px;
   background-position-x: 8px;
 }
